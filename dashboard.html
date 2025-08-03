@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Dashboard - National School Manager</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h2>School Manager</h2>
+                </div>
+            </div>
+            
+            <div class="school-info" id="schoolInfo">
+                <div class="school-name">Loading...</div>
+                <div class="school-code">School ID: Loading...</div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <a href="students.html" class="nav-item">
+                    <i class="fas fa-user-graduate"></i>
+                    Students
+                </a>
+                <a href="teachers.html" class="nav-item">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    Teachers
+                </a>
+                <a href="attendance.html" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    Attendance
+                </a>
+                <a href="fees.html" class="nav-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Fees Management
+                </a>
+                <a href="exams.html" class="nav-item">
+                    <i class="fas fa-clipboard-list"></i>
+                    Exams & Results
+                </a>
+                <a href="syllabus.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    Syllabus
+                </a>
+                <a href="materials.html" class="nav-item">
+                    <i class="fas fa-folder-open"></i>
+                    Study Materials
+                </a>
+                <a href="events.html" class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    Events & Calendar
+                </a>
+                <a href="reports.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    Reports
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <h1 class="page-title">Dashboard</h1>
+                    </div>
+                    <div class="header-right">
+                        <button class="notification-btn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        <div class="user-menu" onclick="toggleUserMenu()">
+                            <div class="user-avatar" id="userAvatar">
+                                <span id="userInitials">SA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- User Dropdown Menu -->
+            <div id="userDropdown" class="user-dropdown" style="display: none;">
+                <div class="dropdown-item" onclick="window.location.href='profile.html'">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </div>
+                <div class="dropdown-item" onclick="window.location.href='settings.html'">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+                <div class="dropdown-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Welcome Section -->
+                <div class="welcome-section">
+                    <h2 id="welcomeMessage">Welcome back!</h2>
+                    <p id="todayDate">Today is <span></span></p>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Students</span>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalStudents">0</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+5 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card green">
+                        <div class="stat-header">
+                            <span class="stat-title">Present Today</span>
+                            <div class="stat-icon green">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="presentToday">0</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span id="attendancePercentage">95% attendance</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card orange">
+                        <div class="stat-header">
+                            <span class="stat-title">Fees Due</span>
+                            <div class="stat-icon orange">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalDues">₹0</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-arrow-down"></i>
+                            <span id="feesCollection">80% collected</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card red">
+                        <div class="stat-header">
+                            <span class="stat-title">Teachers</span>
+                            <div class="stat-icon red">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalTeachers">0</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>All active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Quick Actions</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="quick-actions-grid">
+                                <button class="quick-action-btn" onclick="window.location.href='students.html?action=add'">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span>Add Student</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="window.location.href='attendance.html'">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Mark Attendance</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="window.location.href='fees.html?action=collect'">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span>Collect Fees</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="window.location.href='exams.html?action=add'">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Create Exam</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="window.location.href='materials.html?action=upload'">
+                                    <i class="fas fa-upload"></i>
+                                    <span>Upload Material</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="window.location.href='events.html?action=add'">
+                                    <i class="fas fa-calendar-plus"></i>
+                                    <span>Add Event</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activities and Upcoming Events -->
+                <div class="dashboard-grid">
+                    <!-- Recent Students -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Students</h3>
+                            <a href="students.html" class="btn btn-secondary btn-sm">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="recent-list" id="recentStudents">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Fees -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Pending Fees</h3>
+                            <a href="fees.html" class="btn btn-secondary btn-sm">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="fee-alerts" id="pendingFees">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Attendance -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Today's Attendance</h3>
+                            <a href="attendance.html" class="btn btn-secondary btn-sm">View Details</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="attendance-summary" id="attendanceSummary">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Upcoming Events</h3>
+                            <a href="events.html" class="btn btn-secondary btn-sm">View All</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="events-list" id="upcomingEvents">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class Performance Chart -->
+                <div class="chart-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Class-wise Performance</h3>
+                            <div class="chart-controls">
+                                <select id="performanceMetric">
+                                    <option value="attendance">Attendance</option>
+                                    <option value="fees">Fee Collection</option>
+                                    <option value="results">Exam Results</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container" id="performanceChart">
+                                <!-- Chart will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    
+    <script src="firebase-config.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/dashboard.js"></script>
+
+    <style>
+        /* Additional styles for dashboard */
+        .welcome-section {
+            margin-bottom: 2rem;
+        }
+
+        .welcome-section h2 {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .quick-actions-section {
+            margin-bottom: 2rem;
+        }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-action-btn {
+            background: var(--bg-primary);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .quick-action-btn:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quick-action-btn i {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+        }
+
+        .quick-action-btn span {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recent-list-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .recent-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: 600;
+        }
+
+        .student-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .student-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .fee-alert {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .fee-alert:last-child {
+            border-bottom: none;
+        }
+
+        .fee-amount {
+            font-weight: 600;
+            color: var(--secondary-red);
+        }
+
+        .attendance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+
+        .attendance-percentage {
+            font-weight: 600;
+        }
+
+        .attendance-percentage.good {
+            color: var(--secondary-green);
+        }
+
+        .attendance-percentage.average {
+            color: var(--secondary-orange);
+        }
+
+        .attendance-percentage.poor {
+            color: var(--secondary-red);
+        }
+
+        .event-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-date {
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            margin-right: 1rem;
+            min-width: 60px;
+        }
+
+        .event-date .day {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .event-date .month {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        .event-info h4 {
+            margin: 0 0 0.25rem 0;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .event-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .chart-section {
+            margin-bottom: 2rem;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chart-controls select {
+            padding: 0.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            background: var(--bg-primary);
+        }
+
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            color: var(--text-secondary);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 0.5rem 0;
+            min-width: 150px;
+            z-index: 1000;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .quick-actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

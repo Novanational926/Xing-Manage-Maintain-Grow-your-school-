@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National School Manager - Login</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h1>National School Manager</h1>
+                </div>
+                <p class="tagline">Transform Education Digitally</p>
+            </div>
+
+            <div class="login-form-container">
+                <div class="role-selector">
+                    <button class="role-btn active" data-role="school">School Admin</button>
+                    <button class="role-btn" data-role="teacher">Teacher</button>
+                    <button class="role-btn" data-role="student">Student</button>
+                    <button class="role-btn" data-role="super">Super Admin</button>
+                </div>
+
+                <form id="loginForm" class="login-form">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <div class="form-group" id="schoolCodeGroup" style="display: none;">
+                        <label for="schoolCode">School Code</label>
+                        <input type="text" id="schoolCode" name="schoolCode" placeholder="Enter your school code">
+                    </div>
+
+                    <button type="submit" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="login-footer">
+                    <div class="signup-section">
+                        <p>New School? <a href="#" id="signupLink">Register for Subscription</a></p>
+                    </div>
+                    <div class="demo-section">
+                        <button id="demoBtn" class="demo-btn">Try Demo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- School Registration Modal -->
+        <div id="registrationModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>School Registration</h2>
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="schoolName">School Name</label>
+                        <input type="text" id="schoolName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="principalName">Principal Name</label>
+                        <input type="text" id="principalName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="schoolEmail">School Email</label>
+                        <input type="email" id="schoolEmail" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="schoolPhone">Phone Number</label>
+                        <input type="tel" id="schoolPhone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="schoolAddress">Address</label>
+                        <textarea id="schoolAddress" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminPassword">Set Admin Password</label>
+                        <input type="password" id="adminPassword" required>
+                    </div>
+
+                    <div class="subscription-plans">
+                        <h3>Choose Subscription Plan</h3>
+                        <div class="plans">
+                            <div class="plan" data-plan="monthly">
+                                <h4>Monthly</h4>
+                                <div class="price">₹500/month</div>
+                                <p>Perfect for small schools</p>
+                            </div>
+                            <div class="plan selected" data-plan="yearly">
+                                <h4>Yearly</h4>
+                                <div class="price">₹5000/year</div>
+                                <p>Save ₹1000! Best value</p>
+                                <span class="badge">Recommended</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="register-btn">Proceed to Payment</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div id="paymentModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Complete Payment</h2>
+                <div class="payment-summary">
+                    <h3>Payment Details</h3>
+                    <div class="summary-item">
+                        <span>Plan:</span>
+                        <span id="selectedPlan">Yearly Subscription</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Amount:</span>
+                        <span id="paymentAmount">₹5000</span>
+                    </div>
+                </div>
+                
+                <div class="payment-methods">
+                    <button class="payment-btn" onclick="processPayment('upi')">
+                        <i class="fas fa-mobile-alt"></i>
+                        Pay with UPI
+                    </button>
+                    <button class="payment-btn" onclick="processPayment('card')">
+                        <i class="fas fa-credit-card"></i>
+                        Pay with Card
+                    </button>
+                    <button class="payment-btn demo-payment" onclick="processPayment('demo')">
+                        <i class="fas fa-gift"></i>
+                        Demo Payment (Test)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Setting up your school...</p>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    
+    <script src="firebase-config.js"></script>
+    <script src="scripts/auth.js"></script>
+    <script src="scripts/utils.js"></script>
+</body>
+</html>
