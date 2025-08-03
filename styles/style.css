@@ -301,6 +301,13 @@ body {
     margin-bottom: 5px;
 }
 
+.plan .regular-price {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+}
+
 .plan .savings {
     font-size: 0.9rem;
     color: var(--success-color);

@@ -81,8 +81,8 @@ A complete multi-school academic management system built with HTML, CSS, JavaScr
 ## 💰 Business Model
 
 ### Revenue Streams
-- **Monthly Subscriptions**: ₹500/month per school
-- **Yearly Subscriptions**: ₹5000/year per school (17% discount)
+- **Monthly Subscriptions**: ₹200 first month, then ₹1000/month per school
+- **Yearly Subscriptions**: ₹11,500/year per school (4% discount)
 - **Potential Add-ons**: Custom branding, advanced analytics, premium support
 
 ### Target Market
@@ -179,12 +179,12 @@ To enable real payments, integrate with:
 ## 📊 Potential Revenue
 
 **Conservative Estimates**:
-- 50 schools × ₹500/month = ₹25,000/month
-- 100 schools × ₹500/month = ₹50,000/month
-- 500 schools × ₹500/month = ₹2,50,000/month
+- 50 schools × ₹1000/month = ₹50,000/month
+- 100 schools × ₹1000/month = ₹1,00,000/month
+- 500 schools × ₹1000/month = ₹5,00,000/month
 
 **Optimistic Scenario** (mix of monthly/yearly):
-- 200 monthly (₹500) + 100 yearly (₹5000) = ₹1,41,667/month average
+- 200 monthly (₹1000) + 100 yearly (₹11,500) = ₹2,95,833/month average
 
 ## 🚀 Future Enhancements
 

@@ -38,7 +38,7 @@ if (DEMO_MODE) {
                         plan: 'yearly',
                         status: 'active',
                         expiryDate: '2025-12-31',
-                        amount: 5000
+                        amount: 11500
                     },
                     students: {
                         'std_001': {
@@ -157,7 +157,7 @@ if (DEMO_MODE) {
                         plan: 'monthly',
                         status: 'active',
                         expiryDate: '2025-01-20',
-                        amount: 500
+                        amount: 1000
                     },
                     students: {
                         'std_004': {

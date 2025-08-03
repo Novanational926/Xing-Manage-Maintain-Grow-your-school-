@@ -156,7 +156,7 @@ class AuthSystem {
         }
 
         const plan = selectedPlan.dataset.plan;
-        const amount = plan === 'monthly' ? 500 : 5000;
+        const amount = plan === 'monthly' ? 200 : 11500;
 
         this.showLoading(true);
 
@@ -219,6 +219,9 @@ class AuthSystem {
         const expiryDate = schoolData.plan === 'monthly' 
             ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
             : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        
+        // For monthly plans, first month is ₹200, then ₹1000/month
+        const actualAmount = schoolData.plan === 'monthly' ? 200 : schoolData.amount;
 
         // Add school
         demoData.schools[schoolId] = {
@@ -230,7 +233,9 @@ class AuthSystem {
                 plan: schoolData.plan,
                 status: 'active',
                 expiryDate: expiryDate,
-                amount: schoolData.amount,
+                amount: actualAmount,
+                regularAmount: schoolData.plan === 'monthly' ? 1000 : schoolData.amount,
+                isIntroductory: schoolData.plan === 'monthly',
                 transactionId: 'TXN' + Date.now()
             },
             students: {},
