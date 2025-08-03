@@ -1,59 +1,339 @@
-// Authentication system for National School Manager
+// Enhanced Authentication System for National School Manager
 class AuthSystem {
     constructor() {
         this.currentUser = null;
-        this.init();
-    }
-
-    init() {
-        // Check if user is already logged in
+        this.demoMode = window.DEMO_MODE || true;
+        this.initializeEventListeners();
         this.checkAuthState();
-        this.bindEvents();
     }
 
-    bindEvents() {
-        // Login form
+    initializeEventListeners() {
+        // Form submissions
         const authForm = document.getElementById('authForm');
+        const schoolRegisterForm = document.getElementById('schoolRegisterForm');
+        
         if (authForm) {
             authForm.addEventListener('submit', (e) => this.handleLogin(e));
         }
-
-        // School registration form
-        const schoolRegisterForm = document.getElementById('schoolRegisterForm');
+        
         if (schoolRegisterForm) {
             schoolRegisterForm.addEventListener('submit', (e) => this.handleSchoolRegistration(e));
         }
 
-        // Google sign in
-        const googleSignIn = document.getElementById('googleSignIn');
-        if (googleSignIn) {
-            googleSignIn.addEventListener('click', () => this.handleGoogleSignIn());
+        // Form toggles
+        this.setupFormToggles();
+        
+        // Plan selection
+        this.setupPlanSelection();
+        
+        // Real-time form validation
+        this.setupFormValidation();
+        
+        // Enhanced UI interactions
+        this.setupUIEnhancements();
+    }
+
+    setupFormToggles() {
+        const showRegister = document.getElementById('showRegister');
+        const showLogin = document.getElementById('showLogin');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        if (showRegister) {
+            showRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.animateFormTransition(loginForm, registerForm);
+            });
         }
 
-        // Logout buttons
-        document.addEventListener('click', (e) => {
-            if (e.target.matches('[data-logout]') || e.target.closest('[data-logout]')) {
-                this.handleLogout();
+        if (showLogin) {
+            showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.animateFormTransition(registerForm, loginForm);
+            });
+        }
+    }
+
+    animateFormTransition(hideForm, showForm) {
+        hideForm.style.transform = 'translateX(-20px)';
+        hideForm.style.opacity = '0';
+        
+        setTimeout(() => {
+            hideForm.style.display = 'none';
+            showForm.style.display = 'block';
+            showForm.style.transform = 'translateX(20px)';
+            showForm.style.opacity = '0';
+            
+            setTimeout(() => {
+                showForm.style.transform = 'translateX(0)';
+                showForm.style.opacity = '1';
+                showForm.style.transition = 'all 0.3s ease';
+            }, 50);
+        }, 300);
+    }
+
+    setupPlanSelection() {
+        const plans = document.querySelectorAll('.plan');
+        plans.forEach(plan => {
+            plan.addEventListener('click', () => {
+                // Remove selection from all plans
+                plans.forEach(p => {
+                    p.classList.remove('selected');
+                    p.style.transform = 'translateY(0)';
+                });
+                
+                // Add selection to clicked plan
+                plan.classList.add('selected');
+                plan.style.transform = 'translateY(-5px)';
+                
+                // Add subtle pulse animation
+                plan.style.animation = 'pulse 0.3s ease-out';
+                setTimeout(() => {
+                    plan.style.animation = '';
+                }, 300);
+            });
+
+            // Add hover effects
+            plan.addEventListener('mouseenter', () => {
+                if (!plan.classList.contains('selected')) {
+                    plan.style.transform = 'translateY(-3px)';
+                }
+            });
+
+            plan.addEventListener('mouseleave', () => {
+                if (!plan.classList.contains('selected')) {
+                    plan.style.transform = 'translateY(0)';
+                }
+            });
+        });
+    }
+
+    setupFormValidation() {
+        // Real-time email validation
+        const emailInputs = document.querySelectorAll('input[type="email"]');
+        emailInputs.forEach(input => {
+            input.addEventListener('blur', () => this.validateEmail(input));
+            input.addEventListener('input', () => this.clearValidationError(input));
+        });
+
+        // Password strength indicator
+        const passwordInputs = document.querySelectorAll('input[type="password"]');
+        passwordInputs.forEach(input => {
+            input.addEventListener('input', () => this.checkPasswordStrength(input));
+        });
+
+        // Phone number formatting
+        const phoneInputs = document.querySelectorAll('input[type="tel"]');
+        phoneInputs.forEach(input => {
+            input.addEventListener('input', () => this.formatPhoneNumber(input));
+        });
+
+        // School name validation
+        const schoolNameInput = document.getElementById('schoolName');
+        if (schoolNameInput) {
+            schoolNameInput.addEventListener('blur', () => this.validateSchoolName(schoolNameInput));
+        }
+    }
+
+    setupUIEnhancements() {
+        // Add floating labels effect
+        const formGroups = document.querySelectorAll('.form-group');
+        formGroups.forEach(group => {
+            const input = group.querySelector('input, select, textarea');
+            if (input) {
+                input.addEventListener('focus', () => {
+                    group.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', () => {
+                    if (!input.value) {
+                        group.classList.remove('focused');
+                    }
+                });
+                
+                // Check if input has value on page load
+                if (input.value) {
+                    group.classList.add('focused');
+                }
             }
         });
+
+        // Add ripple effect to buttons
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', this.createRippleEffect);
+        });
+    }
+
+    createRippleEffect(e) {
+        const button = e.currentTarget;
+        const ripple = document.createElement('span');
+        const rect = button.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s ease-out;
+            pointer-events: none;
+        `;
+        
+        button.style.position = 'relative';
+        button.style.overflow = 'hidden';
+        button.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    }
+
+    validateEmail(input) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValid = emailRegex.test(input.value);
+        
+        if (!isValid && input.value) {
+            this.showFieldError(input, 'Please enter a valid email address');
+            return false;
+        }
+        
+        this.clearFieldError(input);
+        return true;
+    }
+
+    checkPasswordStrength(input) {
+        const password = input.value;
+        const strength = this.calculatePasswordStrength(password);
+        
+        // Remove existing strength indicator
+        const existingIndicator = input.parentNode.querySelector('.password-strength');
+        if (existingIndicator) {
+            existingIndicator.remove();
+        }
+        
+        if (password.length > 0) {
+            const indicator = document.createElement('div');
+            indicator.className = 'password-strength';
+            indicator.innerHTML = `
+                <div class="strength-bar">
+                    <div class="strength-fill strength-${strength.level}" style="width: ${strength.percentage}%"></div>
+                </div>
+                <span class="strength-text">${strength.text}</span>
+            `;
+            
+            input.parentNode.appendChild(indicator);
+        }
+    }
+
+    calculatePasswordStrength(password) {
+        let score = 0;
+        
+        if (password.length >= 8) score++;
+        if (/[a-z]/.test(password)) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        
+        const levels = [
+            { level: 'weak', text: 'Weak', percentage: 20 },
+            { level: 'fair', text: 'Fair', percentage: 40 },
+            { level: 'good', text: 'Good', percentage: 60 },
+            { level: 'strong', text: 'Strong', percentage: 80 },
+            { level: 'excellent', text: 'Excellent', percentage: 100 }
+        ];
+        
+        return levels[Math.min(score, 4)];
+    }
+
+    formatPhoneNumber(input) {
+        let value = input.value.replace(/\D/g, '');
+        
+        if (value.startsWith('91')) {
+            value = value.substring(2);
+        }
+        
+        if (value.length <= 10) {
+            value = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+            input.value = '+91-' + value;
+        }
+    }
+
+    validateSchoolName(input) {
+        const name = input.value.trim();
+        
+        if (name.length < 3) {
+            this.showFieldError(input, 'School name must be at least 3 characters long');
+            return false;
+        }
+        
+        if (!/^[a-zA-Z\s]+$/.test(name)) {
+            this.showFieldError(input, 'School name should only contain letters and spaces');
+            return false;
+        }
+        
+        this.clearFieldError(input);
+        return true;
+    }
+
+    showFieldError(input, message) {
+        this.clearFieldError(input);
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'field-error';
+        errorDiv.textContent = message;
+        errorDiv.style.cssText = `
+            color: var(--danger-color);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            animation: slideInError 0.3s ease-out;
+        `;
+        
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-exclamation-circle';
+        errorDiv.prepend(icon);
+        
+        input.parentNode.appendChild(errorDiv);
+        input.style.borderColor = 'var(--danger-color)';
+    }
+
+    clearFieldError(input) {
+        const errorDiv = input.parentNode.querySelector('.field-error');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+        input.style.borderColor = '';
+    }
+
+    clearValidationError(input) {
+        this.clearFieldError(input);
     }
 
     async handleLogin(e) {
         e.preventDefault();
         
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.toLowerCase().trim();
         const password = document.getElementById('password').value;
         const role = document.getElementById('userRole').value;
 
-        if (!email || !password || !role) {
-            this.showError('Please fill in all fields');
+        // Validate form
+        if (!this.validateLoginForm(email, password, role)) {
             return;
         }
 
-        this.showLoading(true);
-
+        this.showLoading(true, 'Authenticating...');
+        
         try {
-            if (window.DEMO_MODE) {
+            if (this.demoMode) {
                 await this.demoLogin(email, password, role);
             } else {
                 await this.firebaseLogin(email, password, role);
@@ -65,122 +345,100 @@ class AuthSystem {
         }
     }
 
-    async demoLogin(email, password, role) {
-        const demoData = window.getDemoData();
-        const users = demoData.users;
-
-        // Find user by email
-        const userKey = email.toLowerCase();
-        const user = users[userKey];
-
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        if (user.password !== password) {
-            throw new Error('Invalid password');
-        }
-
-        if (user.role !== role) {
-            throw new Error('Invalid role selected');
-        }
-
-        // Check subscription status for school admins
-        if (role === 'school_admin') {
-            const school = demoData.schools[user.schoolId];
-            if (!school || !this.isSubscriptionActive(school.subscription)) {
-                throw new Error('School subscription is expired or inactive');
-            }
-        }
-
-        // Set current user
-        this.currentUser = {
-            uid: userKey,
-            email: user.email,
-            role: user.role,
-            name: user.name,
-            schoolId: user.schoolId || null,
-            teacherId: user.teacherId || null,
-            studentId: user.studentId || null
-        };
-
-        // Store in localStorage
-        localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+    validateLoginForm(email, password, role) {
+        let isValid = true;
         
-        // Redirect to appropriate dashboard
-        this.redirectToDashboard();
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const roleSelect = document.getElementById('userRole');
+        
+        if (!email) {
+            this.showFieldError(emailInput, 'Email is required');
+            isValid = false;
+        } else if (!this.validateEmail(emailInput)) {
+            isValid = false;
+        }
+        
+        if (!password) {
+            this.showFieldError(passwordInput, 'Password is required');
+            isValid = false;
+        } else if (password.length < 6) {
+            this.showFieldError(passwordInput, 'Password must be at least 6 characters');
+            isValid = false;
+        }
+        
+        if (!role) {
+            this.showFieldError(roleSelect, 'Please select your role');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    async demoLogin(email, password, role) {
+        // Simulate network delay
+        await this.delay(1500);
+        
+        const demoData = window.getDemoData();
+        const user = demoData.users[email];
+        
+        if (!user) {
+            throw new Error('User not found. Please check your email address.');
+        }
+        
+        if (user.password !== password) {
+            throw new Error('Incorrect password. Please try again.');
+        }
+        
+        if (user.role !== role) {
+            throw new Error(`Invalid role selected. This user is registered as ${user.role}.`);
+        }
+
+        this.currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        
+        this.showSuccess('Login successful! Redirecting to dashboard...');
+        
+        // Add success animation
+        this.addSuccessAnimation();
+        
+        setTimeout(() => {
+            this.redirectToDashboard(user.role);
+        }, 1500);
     }
 
     async firebaseLogin(email, password, role) {
-        try {
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
-            const user = userCredential.user;
-
-            // Get user role from database
-            const userDoc = await database.ref(`users/${user.uid}`).once('value');
-            const userData = userDoc.val();
-
-            if (!userData || userData.role !== role) {
-                throw new Error('Invalid role or user data');
-            }
-
-            this.currentUser = {
-                uid: user.uid,
-                email: user.email,
-                role: userData.role,
-                name: userData.name,
-                schoolId: userData.schoolId || null
-            };
-
-            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
-            this.redirectToDashboard();
-
-        } catch (error) {
-            throw new Error(error.message);
-        }
+        // Firebase authentication logic would go here
+        throw new Error('Firebase authentication not implemented in demo mode');
     }
 
     async handleSchoolRegistration(e) {
         e.preventDefault();
-
-        const schoolName = document.getElementById('schoolName').value;
-        const adminEmail = document.getElementById('adminEmail').value;
-        const adminPassword = document.getElementById('adminPassword').value;
-        const schoolPhone = document.getElementById('schoolPhone').value;
-        const schoolAddress = document.getElementById('schoolAddress').value;
         
+        const formData = new FormData(e.target);
         const selectedPlan = document.querySelector('.plan.selected');
-        if (!selectedPlan) {
-            this.showError('Please select a subscription plan');
+        
+        if (!this.validateRegistrationForm(formData, selectedPlan)) {
             return;
         }
 
-        const plan = selectedPlan.dataset.plan;
-        const amount = plan === 'monthly' ? 200 : 11500;
+        const schoolData = {
+            name: formData.get('schoolName') || document.getElementById('schoolName').value,
+            adminEmail: formData.get('adminEmail') || document.getElementById('adminEmail').value,
+            password: formData.get('adminPassword') || document.getElementById('adminPassword').value,
+            phone: formData.get('schoolPhone') || document.getElementById('schoolPhone').value,
+            address: formData.get('schoolAddress') || document.getElementById('schoolAddress').value,
+            plan: selectedPlan.dataset.plan,
+            amount: selectedPlan.dataset.plan === 'monthly' ? 200 : 11500
+        };
 
-        this.showLoading(true);
-
+        this.showLoading(true, 'Processing registration and payment...');
+        
         try {
-            // Simulate payment process
-            const paymentResult = await this.processPayment(amount, plan);
-            
-            if (paymentResult.success) {
-                // Register school
-                await this.registerSchool({
-                    name: schoolName,
-                    adminEmail,
-                    adminPassword,
-                    phone: schoolPhone,
-                    address: schoolAddress,
-                    plan,
-                    amount
-                });
-
-                this.showSuccess('School registered successfully! Please login with your credentials.');
-                
-                // Switch to login form
-                document.getElementById('registerForm').style.display = 'none';
-                document.getElementById('loginForm').style.display = 'block';
+            if (this.demoMode) {
+                await this.demoRegisterSchool(schoolData);
+            } else {
+                await this.firebaseRegisterSchool(schoolData);
             }
         } catch (error) {
             this.showError(error.message);
@@ -189,38 +447,71 @@ class AuthSystem {
         }
     }
 
-    async processPayment(amount, plan) {
-        // Simulate payment gateway
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // For demo, always succeed
-                resolve({
-                    success: true,
-                    transactionId: 'TXN' + Date.now(),
-                    amount,
-                    plan
-                });
-            }, 2000);
-        });
-    }
-
-    async registerSchool(schoolData) {
-        if (window.DEMO_MODE) {
-            await this.demoRegisterSchool(schoolData);
-        } else {
-            await this.firebaseRegisterSchool(schoolData);
+    validateRegistrationForm(formData, selectedPlan) {
+        let isValid = true;
+        
+        const schoolName = document.getElementById('schoolName');
+        const adminEmail = document.getElementById('adminEmail');
+        const adminPassword = document.getElementById('adminPassword');
+        const schoolPhone = document.getElementById('schoolPhone');
+        const schoolAddress = document.getElementById('schoolAddress');
+        
+        // Validate school name
+        if (!this.validateSchoolName(schoolName)) {
+            isValid = false;
         }
+        
+        // Validate admin email
+        if (!this.validateEmail(adminEmail)) {
+            isValid = false;
+        }
+        
+        // Validate password
+        if (!adminPassword.value || adminPassword.value.length < 6) {
+            this.showFieldError(adminPassword, 'Password must be at least 6 characters');
+            isValid = false;
+        }
+        
+        // Validate phone
+        if (!schoolPhone.value) {
+            this.showFieldError(schoolPhone, 'Phone number is required');
+            isValid = false;
+        }
+        
+        // Validate address
+        if (!schoolAddress.value || schoolAddress.value.length < 10) {
+            this.showFieldError(schoolAddress, 'Please enter a complete address (minimum 10 characters)');
+            isValid = false;
+        }
+        
+        // Validate plan selection
+        if (!selectedPlan) {
+            this.showError('Please select a subscription plan');
+            isValid = false;
+        }
+        
+        return isValid;
     }
 
     async demoRegisterSchool(schoolData) {
+        // Simulate payment processing
+        await this.delay(2000);
+        
+        // Simulate payment gateway
+        const paymentResult = await this.processPayment(schoolData);
+        
+        if (!paymentResult.success) {
+            throw new Error('Payment failed. Please try again.');
+        }
+        
+        // Register school in demo data
         const demoData = window.getDemoData();
-        const schoolId = 'school_' + Date.now();
+        const schoolId = 'school_' + Date.now().toString().substr(-6);
         
         const expiryDate = schoolData.plan === 'monthly' 
             ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
             : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         
-        // For monthly plans, first month is ₹200, then ₹1000/month
         const actualAmount = schoolData.plan === 'monthly' ? 200 : schoolData.amount;
 
         // Add school
@@ -236,7 +527,7 @@ class AuthSystem {
                 amount: actualAmount,
                 regularAmount: schoolData.plan === 'monthly' ? 1000 : schoolData.amount,
                 isIntroductory: schoolData.plan === 'monthly',
-                transactionId: 'TXN' + Date.now()
+                transactionId: paymentResult.transactionId
             },
             students: {},
             teachers: {},
@@ -246,265 +537,413 @@ class AuthSystem {
         };
 
         // Add admin user
-        demoData.users[schoolData.adminEmail.toLowerCase()] = {
+        demoData.users[schoolData.adminEmail] = {
             email: schoolData.adminEmail,
-            password: schoolData.adminPassword,
+            password: schoolData.password,
             role: 'school_admin',
             schoolId: schoolId,
             name: schoolData.name + ' Admin'
         };
 
         window.setDemoData(demoData);
-    }
-
-    async firebaseRegisterSchool(schoolData) {
-        // Create admin user
-        const userCredential = await auth.createUserWithEmailAndPassword(
-            schoolData.adminEmail, 
-            schoolData.adminPassword
-        );
         
-        const user = userCredential.user;
-        const schoolId = 'school_' + user.uid;
-
-        // Store school data
-        await database.ref(`schools/${schoolId}`).set({
-            name: schoolData.name,
-            adminEmail: schoolData.adminEmail,
-            phone: schoolData.phone,
-            address: schoolData.address,
-            subscription: {
-                plan: schoolData.plan,
-                status: 'active',
-                expiryDate: schoolData.plan === 'monthly' 
-                    ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-                    : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-                amount: schoolData.amount
-            },
-            createdAt: new Date().toISOString()
-        });
-
-        // Store admin user data
-        await database.ref(`users/${user.uid}`).set({
-            email: schoolData.adminEmail,
-            role: 'school_admin',
-            schoolId: schoolId,
-            name: schoolData.name + ' Admin'
-        });
+        this.showSuccess('🎉 School registered successfully! Payment confirmed. You can now login with your credentials.');
+        
+        // Add celebration animation
+        this.addCelebrationAnimation();
+        
+        setTimeout(() => {
+            // Switch to login form
+            const registerForm = document.getElementById('registerForm');
+            const loginForm = document.getElementById('loginForm');
+            this.animateFormTransition(registerForm, loginForm);
+            
+            // Pre-fill email
+            document.getElementById('email').value = schoolData.adminEmail;
+            document.getElementById('userRole').value = 'school_admin';
+        }, 3000);
     }
 
-    async handleGoogleSignIn() {
-        if (window.DEMO_MODE) {
-            this.showError('Google Sign-In not available in demo mode');
-            return;
-        }
-
-        try {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            const result = await auth.signInWithPopup(provider);
-            
-            // Handle Google sign-in result
-            const user = result.user;
-            
-            // Check if user exists in database
-            const userDoc = await database.ref(`users/${user.uid}`).once('value');
-            
-            if (!userDoc.exists()) {
-                throw new Error('User not registered. Please register your school first.');
-            }
-
-            const userData = userDoc.val();
-            this.currentUser = {
-                uid: user.uid,
-                email: user.email,
-                role: userData.role,
-                name: user.displayName,
-                schoolId: userData.schoolId
+    async processPayment(schoolData) {
+        // Simulate payment gateway API call
+        await this.delay(1500);
+        
+        // Simulate 95% success rate
+        if (Math.random() < 0.95) {
+            return {
+                success: true,
+                transactionId: 'TXN' + Date.now(),
+                amount: schoolData.amount,
+                method: 'UPI/Card',
+                timestamp: new Date().toISOString()
             };
-
-            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
-            this.redirectToDashboard();
-
-        } catch (error) {
-            this.showError(error.message);
+        } else {
+            return {
+                success: false,
+                error: 'Payment gateway timeout. Please try again.'
+            };
         }
     }
 
-    handleLogout() {
-        if (window.DEMO_MODE) {
-            localStorage.removeItem('currentUser');
-            this.currentUser = null;
-            window.location.href = 'index.html';
-        } else {
-            auth.signOut().then(() => {
-                localStorage.removeItem('currentUser');
-                this.currentUser = null;
-                window.location.href = 'index.html';
-            });
+    addSuccessAnimation() {
+        const loginCard = document.querySelector('.login-card');
+        loginCard.style.animation = 'successPulse 0.6s ease-out';
+        
+        setTimeout(() => {
+            loginCard.style.animation = '';
+        }, 600);
+    }
+
+    addCelebrationAnimation() {
+        // Create confetti effect
+        this.createConfetti();
+        
+        const loginCard = document.querySelector('.login-card');
+        loginCard.style.animation = 'celebrationBounce 1s ease-out';
+        
+        setTimeout(() => {
+            loginCard.style.animation = '';
+        }, 1000);
+    }
+
+    createConfetti() {
+        const colors = ['#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
+        const confettiContainer = document.createElement('div');
+        confettiContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10000;
+        `;
+        
+        document.body.appendChild(confettiContainer);
+        
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                left: ${Math.random() * 100}%;
+                animation: confetti-fall ${2 + Math.random() * 3}s linear forwards;
+                border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+            `;
+            
+            confettiContainer.appendChild(confetti);
+        }
+        
+        setTimeout(() => {
+            confettiContainer.remove();
+        }, 5000);
+    }
+
+    redirectToDashboard(role) {
+        // Hide all sections
+        document.querySelectorAll('.app-section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Show appropriate dashboard
+        switch (role) {
+            case 'super_admin':
+                document.getElementById('super-admin-section').classList.add('active');
+                if (window.superAdminDashboard) {
+                    window.superAdminDashboard.loadData();
+                }
+                break;
+            case 'school_admin':
+                document.getElementById('school-admin-section').classList.add('active');
+                if (this.currentUser.schoolId) {
+                    const demoData = window.getDemoData();
+                    const school = demoData.schools[this.currentUser.schoolId];
+                    if (school) {
+                        document.getElementById('schoolName').textContent = school.name;
+                    }
+                }
+                if (window.schoolDashboard) {
+                    window.schoolDashboard.loadSchoolData();
+                }
+                break;
+            case 'teacher':
+                this.showToast('Teacher dashboard coming soon! 👨‍🏫', 'info');
+                break;
+            case 'student':
+                this.showToast('Student dashboard coming soon! 🎓', 'info');
+                break;
+            default:
+                this.showError('Unknown user role');
         }
     }
 
     checkAuthState() {
         const savedUser = localStorage.getItem('currentUser');
         if (savedUser) {
-            this.currentUser = JSON.parse(savedUser);
-            
-            // If we're on login page and user is logged in, redirect
-            if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
-                this.redirectToDashboard();
-            }
-        } else {
-            // If we're not on login page and no user, redirect to login
-            if (!window.location.pathname.includes('index.html')) {
-                window.location.href = 'index.html';
+            try {
+                this.currentUser = JSON.parse(savedUser);
+                this.redirectToDashboard(this.currentUser.role);
+            } catch (error) {
+                localStorage.removeItem('currentUser');
+                this.showError('Session expired. Please login again.');
             }
         }
     }
 
-    redirectToDashboard() {
-        if (!this.currentUser) return;
-
-        switch (this.currentUser.role) {
-            case 'super_admin':
-                window.location.href = 'super-admin-dashboard.html';
-                break;
-            case 'school_admin':
-                window.location.href = 'school-dashboard.html';
-                break;
-            case 'teacher':
-                window.location.href = 'teacher-dashboard.html';
-                break;
-            case 'student':
-                window.location.href = 'student-dashboard.html';
-                break;
-            default:
-                window.location.href = 'index.html';
-        }
-    }
-
-    isSubscriptionActive(subscription) {
-        if (!subscription) return false;
+    isSubscriptionActive(schoolId) {
+        if (!schoolId) return false;
         
+        const demoData = window.getDemoData();
+        const school = demoData.schools[schoolId];
+        
+        if (!school || !school.subscription) return false;
+        
+        const expiryDate = new Date(school.subscription.expiryDate);
         const today = new Date();
-        const expiryDate = new Date(subscription.expiryDate);
         
-        return subscription.status === 'active' && today <= expiryDate;
+        return school.subscription.status === 'active' && expiryDate > today;
     }
 
-    getCurrentUser() {
-        return this.currentUser;
+    logout() {
+        localStorage.removeItem('currentUser');
+        this.currentUser = null;
+        
+        // Hide all sections
+        document.querySelectorAll('.app-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Show login section
+        document.getElementById('login-section').classList.add('active');
+        
+        // Clear form fields
+        document.getElementById('authForm').reset();
+        
+        this.showToast('Logged out successfully! 👋', 'success');
     }
 
-    hasRole(role) {
-        return this.currentUser && this.currentUser.role === role;
-    }
-
-    hasAccess(requiredRoles) {
-        if (!this.currentUser) return false;
-        return requiredRoles.includes(this.currentUser.role);
-    }
-
-    showLoading(show) {
+    // UI Feedback Methods
+    showLoading(show, message = 'Processing...') {
         const overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            overlay.classList.toggle('show', show);
+        const messageEl = overlay.querySelector('p');
+        
+        if (messageEl) {
+            messageEl.textContent = message;
+        }
+        
+        overlay.classList.toggle('show', show);
+        
+        if (show) {
+            overlay.style.animation = 'fadeIn 0.3s ease-out';
         }
     }
 
     showError(message) {
-        // Create error toast
-        this.showToast(message, 'error');
+        this.showToast('❌ ' + message, 'error');
+        this.shakeLoginCard();
     }
 
     showSuccess(message) {
-        // Create success toast
-        this.showToast(message, 'success');
+        this.showToast('✅ ' + message, 'success');
     }
 
     showToast(message, type = 'info') {
         // Remove existing toasts
-        const existingToasts = document.querySelectorAll('.toast');
-        existingToasts.forEach(toast => toast.remove());
+        document.querySelectorAll('.toast').forEach(toast => toast.remove());
 
-        // Create toast element
         const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
+        toast.className = `toast ${type}`;
+        
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            warning: 'fa-exclamation-triangle',
+            info: 'fa-info-circle'
+        };
+        
+        const colors = {
+            success: '#10b981',
+            error: '#ef4444',
+            warning: '#f59e0b',
+            info: '#06b6d4'
+        };
+
         toast.innerHTML = `
-            <div class="toast-content">
-                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fas ${icons[type]}" style="font-size: 1.2rem; color: ${colors[type]};"></i>
+                <span style="flex: 1;">${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: var(--gray-500); cursor: pointer; font-size: 1.2rem;">×</button>
             </div>
-            <button class="toast-close">&times;</button>
         `;
 
-        // Add styles
         toast.style.cssText = `
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#06b6d4'};
-            color: white;
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            top: 25px;
+            right: 25px;
+            background: var(--white);
+            color: var(--gray-800);
+            padding: 16px 20px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
             z-index: 10001;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 300px;
-            animation: slideInRight 0.3s ease-out;
+            min-width: 350px;
+            max-width: 500px;
+            border-left: 4px solid ${colors[type]};
+            animation: slideInRight 0.4s ease-out;
         `;
 
-        // Add to document
         document.body.appendChild(toast);
-
-        // Close button
-        const closeBtn = toast.querySelector('.toast-close');
-        closeBtn.style.cssText = `
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            margin-left: auto;
-        `;
-
-        closeBtn.addEventListener('click', () => {
-            toast.remove();
-        });
 
         // Auto remove after 5 seconds
         setTimeout(() => {
             if (toast.parentNode) {
-                toast.remove();
+                toast.style.animation = 'slideOutRight 0.4s ease-out';
+                setTimeout(() => toast.remove(), 400);
             }
         }, 5000);
+    }
 
-        // Add animation styles if not exist
-        if (!document.getElementById('toast-styles')) {
-            const style = document.createElement('style');
-            style.id = 'toast-styles';
-            style.textContent = `
-                @keyframes slideInRight {
-                    from {
-                        transform: translateX(100%);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
+    shakeLoginCard() {
+        const loginCard = document.querySelector('.login-card');
+        loginCard.style.animation = 'shake 0.5s ease-in-out';
+        
+        setTimeout(() => {
+            loginCard.style.animation = '';
+        }, 500);
+    }
+
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
 
-// Initialize auth system when DOM is loaded
+// Initialize authentication system when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.authSystem = new AuthSystem();
+    
+    // Add CSS animations for enhanced UX
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes slideInError {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(16, 185, 129, 0.3); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes celebrationBounce {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1) rotate(2deg); }
+            75% { transform: scale(1.05) rotate(-1deg); }
+        }
+        
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+        }
+        
+        .strength-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-fill.strength-weak { background: var(--danger-color); }
+        .strength-fill.strength-fair { background: var(--warning-color); }
+        .strength-fill.strength-good { background: var(--primary-color); }
+        .strength-fill.strength-strong { background: var(--success-color); }
+        .strength-fill.strength-excellent { background: var(--success-color); }
+        
+        .strength-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+        
+        .form-group.focused input,
+        .form-group.focused select,
+        .form-group.focused textarea {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .form-group.focused i {
+            color: var(--primary-color);
+        }
+    `;
+    document.head.appendChild(style);
 });
 
-// Export for use in other files
-window.AuthSystem = AuthSystem;
+// Global logout function for navigation links
+function logout() {
+    if (window.authSystem) {
+        window.authSystem.logout();
+    }
+}
