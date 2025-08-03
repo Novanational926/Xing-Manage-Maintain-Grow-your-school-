@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National School Manager</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h1>National School Manager</h1>
+                <p>Digital Academic Management System</p>
+            </div>
+            
+            <div class="login-form" id="loginForm">
+                <h2>Sign In</h2>
+                <form id="authForm">
+                    <div class="form-group">
+                        <input type="email" id="email" placeholder="Email" required>
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" placeholder="Password" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="form-group">
+                        <select id="userRole" required>
+                            <option value="">Select Role</option>
+                            <option value="super_admin">Super Admin</option>
+                            <option value="school_admin">School Admin</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="student">Student</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="login-btn">
+                        <span>Sign In</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+                
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+                
+                <button class="google-btn" id="googleSignIn">
+                    <i class="fab fa-google"></i>
+                    Continue with Google
+                </button>
+                
+                <div class="register-link">
+                    Don't have an account? <a href="#" id="showRegister">Register School</a>
+                </div>
+            </div>
+            
+            <div class="register-form" id="registerForm" style="display: none;">
+                <h2>Register Your School</h2>
+                <form id="schoolRegisterForm">
+                    <div class="form-group">
+                        <input type="text" id="schoolName" placeholder="School Name" required>
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="adminEmail" placeholder="Admin Email" required>
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="adminPassword" placeholder="Password" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="schoolPhone" placeholder="School Phone" required>
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="schoolAddress" placeholder="School Address" required></textarea>
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="subscription-plans">
+                        <h3>Choose Subscription Plan</h3>
+                        <div class="plans">
+                            <div class="plan" data-plan="monthly">
+                                <h4>Monthly</h4>
+                                <div class="price">₹500/month</div>
+                                <ul>
+                                    <li>✓ Full access to all features</li>
+                                    <li>✓ Student management</li>
+                                    <li>✓ Attendance tracking</li>
+                                    <li>✓ Fee management</li>
+                                </ul>
+                            </div>
+                            <div class="plan recommended" data-plan="yearly">
+                                <div class="badge">Best Value</div>
+                                <h4>Yearly</h4>
+                                <div class="price">₹5000/year</div>
+                                <div class="savings">Save ₹1000</div>
+                                <ul>
+                                    <li>✓ All monthly features</li>
+                                    <li>✓ Priority support</li>
+                                    <li>✓ Advanced analytics</li>
+                                    <li>✓ Custom branding</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="register-btn">
+                        <span>Register & Pay</span>
+                        <i class="fas fa-credit-card"></i>
+                    </button>
+                </form>
+                
+                <div class="register-link">
+                    Already have an account? <a href="#" id="showLogin">Sign In</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features-showcase">
+            <div class="feature">
+                <i class="fas fa-users"></i>
+                <h3>Student Management</h3>
+                <p>Complete digital student records</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-calendar-check"></i>
+                <h3>Attendance Tracking</h3>
+                <p>Real-time attendance management</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-rupee-sign"></i>
+                <h3>Fee Management</h3>
+                <p>Automated fee calculation & tracking</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-chart-line"></i>
+                <h3>Performance Analytics</h3>
+                <p>Detailed academic insights</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader"></div>
+        <p>Signing you in...</p>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+    
+    <!-- Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="scripts/auth.js"></script>
+    
+    <script>
+        // Toggle between login and register forms
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        });
+        
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+        
+        // Plan selection
+        document.querySelectorAll('.plan').forEach(plan => {
+            plan.addEventListener('click', () => {
+                document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'));
+                plan.classList.add('selected');
+            });
+        });
+        
+        // Select yearly plan by default
+        document.querySelector('.plan[data-plan="yearly"]').classList.add('selected');
+    </script>
+</body>
+</html>
